@@ -10,4 +10,15 @@ Feature: Skunk Game
         When Nick submits his name to the game
         Then Nick will be in the game player list 
 
-    
+    Scenario: Dice Rolling
+        Given a game has just been started
+        And no dice rolls are visible on the game details
+        When the dice are rolled
+        Then the last roll will be visible on the game details
+
+    # Scenario: Score Checking
+    #     Given a game has been started
+    #     When the game status is checked
+    #     Then all the player scores for each round will be visible
+    #     And the player total scores will be visible
+        

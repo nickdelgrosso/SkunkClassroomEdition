@@ -3,8 +3,9 @@ from pytest_bdd import given, when, then, scenarios
 from pytest_bdd.parsers import parse
 from fastapi.testclient import TestClient
 from starlette.responses import Response
+from models import DiceRoll
 
-from routes import GameListResponse, Game
+from routes import GameDetailsResponse, GameListResponse, Game, GameRegistration, RollDiceResponse
 from main import app
 
 
@@ -62,3 +63,31 @@ def stepdef(client: TestClient, response: Response):
     assert len(players) == 1, players
     
     
+
+@given('a game has just been started', target_fixture='game_id')
+def stepdef(client: TestClient):
+    resp = client.get("/register-new-game")
+    assert resp.ok
+    return GameRegistration.parse_obj(resp.json()).gameId
+
+@given('no dice rolls are visible on the game details')
+def stepdef(client: TestClient, game_id: str):
+    resp = client.get(f'/game?id={game_id}')
+    details = GameDetailsResponse.parse_obj(resp.json())
+    assert details.last_roll is None
+    assert details.game.get_last_roll() is None    
+
+
+@when('the dice are rolled', target_fixture='last_roll')
+def stepdef(client: TestClient, game_id: str):
+    resp = client.get(f'/roll-dice/?game_id={game_id}')
+    assert resp.ok
+    data = RollDiceResponse.parse_obj(resp.json())
+    return data.roll
+
+
+@then('the last roll will be visible on the game details')
+def stepdef(client: TestClient, game_id: str, last_roll: DiceRoll):
+    resp = client.get(f'/game?id={game_id}')
+    details = GameDetailsResponse.parse_obj(resp.json())
+    assert details.last_roll == last_roll

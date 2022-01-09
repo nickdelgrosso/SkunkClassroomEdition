@@ -1,9 +1,33 @@
 from __future__ import annotations
 
 
-from typing import Optional, List
-from uuid import uuid4, UUID
-from pydantic import BaseModel, Field
+import random
+from typing import Optional, List, Tuple
+from uuid import uuid4
+from pydantic import BaseModel, Field, validator
+
+
+
+class DiceRoll(BaseModel):
+    roll1: int
+    roll2: int
+
+    @validator('roll1', 'roll2')
+    def val_from_1_to_6(cls, roll):
+        if not 1 <= roll <= 6:
+            raise ValueError("roll must be between 1 and 6")
+        return roll
+
+    def sum(self):
+        return self.roll1 + self.roll2
+
+    @classmethod
+    def new(cls, seed: Optional[int] = None) -> DiceRoll:
+        randomizer = random.Random() if seed is None else random.Random(seed)
+        diceroll = DiceRoll(
+            roll1=randomizer.randint(1, 6), roll2=randomizer.randint(1, 6)
+        )
+        return diceroll
 
 
 
@@ -16,6 +40,7 @@ class Player(BaseModel):
 class Game(BaseModel):
     players: List[Player] = Field(default_factory=list) 
     id: str =  Field(default_factory=lambda: str(uuid4()))
+    rolls: List[DiceRoll] = Field(default_factory=list)
 
     @classmethod
     def new(cls) -> Game:
@@ -27,7 +52,12 @@ class Game(BaseModel):
     def find_players_by_name(self, name: str):
         return [player for player in self.players if player.name == name]
 
+    def get_last_roll(self) -> Optional[DiceRoll]:
+        return self.rolls[-1] if len(self.rolls) else None
 
+    def add_dice_roll(self, dice_roll: DiceRoll) -> None:
+        self.rolls.append(dice_roll)
+        
 
 class Settings(BaseModel):
     games: List[Game] = Field(default_factory=list)

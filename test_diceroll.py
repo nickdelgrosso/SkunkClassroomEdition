@@ -1,7 +1,7 @@
 import random
 from pytest import mark, raises
 
-from diceroll import DiceRoll
+from models import DiceRoll
 
 random.seed(42)
 
@@ -13,7 +13,7 @@ cases = [
 
 @mark.parametrize("roll1,roll2,total", cases)
 def test_can_calculate_sum_of_paired_d6_rolls(roll1, roll2, total):
-    roll = DiceRoll(roll1, roll2)
+    roll = DiceRoll(roll1=roll1, roll2=roll2)
     assert roll.sum() == total
 
 
@@ -23,7 +23,7 @@ cases = [(0, 5), (5, 0), (7, 6), (2, 7)]
 @mark.parametrize("roll1,roll2", cases)
 def test_nond6_values_raise_valueerror(roll1, roll2):
     with raises(ValueError):
-        DiceRoll(roll1, roll2)
+        DiceRoll(roll1=roll1, roll2=roll2)
 
 
 def test_generate_random_dice_pair_always_same_with_seed():
