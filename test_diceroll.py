@@ -3,6 +3,8 @@ from pytest import mark, raises
 
 from diceroll import DiceRoll
 
+random.seed(42)
+
 cases = [
     (1, 5, 6),
     (2, 3, 5),

@@ -4,6 +4,7 @@ from pytest_bdd.parsers import parse
 from fastapi.testclient import TestClient
 from starlette.responses import Response
 
+from routes import GameListResponse, Game
 from main import app
 
 
@@ -55,5 +56,9 @@ def stepdef(client: TestClient, game_id: str, player_name: str):
 def stepdef(client: TestClient, response: Response):
     data = response.json()
     game_data = client.get("/games").json()
-    assert 'Nick' in [p['name'] for p in game_data['games'][data['gameId']]['players']]
-
+    games = GameListResponse.parse_obj(game_data)    
+    game = Game.parse_obj(games.get_game(data['gameId']))
+    players = game.find_players_by_name('Nick')
+    assert len(players) == 1, players
+    
+    
