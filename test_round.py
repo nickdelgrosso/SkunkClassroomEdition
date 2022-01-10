@@ -82,3 +82,19 @@ def test_round_calculates_score_with_lockins():
     with raises(Exception):
         round.add_roll(roll)
     assert len(round.rolls) == 5
+
+
+def test_late_players_get_same_number_of_points_as_everyone_else():
+    round = Round.new()
+    normal_player = Player(name='Nick')
+    round.add_player(normal_player)
+    round.add_roll(DiceRoll(roll1=5, roll2=6))
+    assert round.scores[normal_player] == 11
+
+    late_player = Player(name='John')
+    round.add_player(late_player)
+    assert round.scores[normal_player] == 11
+    assert round.scores[late_player] == 11
+
+    
+
