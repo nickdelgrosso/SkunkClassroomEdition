@@ -3,8 +3,6 @@ from pytest import mark, raises
 
 from models import DiceRoll
 
-random.seed(42)
-
 cases = [
     (1, 5, 6),
     (2, 3, 5),
@@ -27,14 +25,12 @@ def test_nond6_values_raise_valueerror(roll1, roll2):
 
 
 def test_generate_random_dice_pair_always_same_with_seed():
-    seed1 = random.randint(0, 1000000)
-    seed2 = random.randint(0, 1000000)
-    roll1 = DiceRoll.new(seed=seed1)
-    roll2 = DiceRoll.new(seed=seed1)
+    roll1 = DiceRoll.new(seed=1)
+    roll2 = DiceRoll.new(seed=1)
     assert roll1 == roll2
-    roll3 = DiceRoll.new(seed=seed2)
+    roll3 = DiceRoll.new(seed=5)
     assert roll1 != roll3
-    roll4 = DiceRoll.new()
+    roll4 = DiceRoll.new(seed=4)
     assert roll1 != roll4
     assert roll3 != roll4
 

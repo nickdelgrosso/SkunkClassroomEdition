@@ -66,14 +66,6 @@ class Round(BaseModel):
     def add_player(self, player: Player) -> None:
         self.players.add(player)
 
-    @property
-    def is_over(self) -> bool:
-        return any(roll.is_skunk() for roll in self.rolls)
-
-    def roll(self):
-        roll = DiceRoll.new()
-        self.add_roll(roll)
-
     def add_roll(self, roll: DiceRoll):
         if self.is_over:
             raise TypeError("Round over.  No more rolls can be added.")
@@ -82,6 +74,10 @@ class Round(BaseModel):
     @property
     def rolls(self) -> List[DiceRoll]:
         return [e for e in self.events if isinstance(e, DiceRoll)]
+
+    @property
+    def is_over(self) -> bool:
+        return any(roll.is_skunk() for roll in self.rolls)
 
     def add_lockin(self, player: Player):
         if self.is_over:

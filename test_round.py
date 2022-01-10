@@ -5,9 +5,11 @@ from models import DiceRoll, Player, Round
 
 def test_round_logs_roll_history():
     round = Round.new()
-    round.roll()
-    round.roll()
-    round.roll()
+
+    roll = DiceRoll(roll1=2, roll2=3)
+    round.add_roll(roll)
+    round.add_roll(roll)
+    round.add_roll(roll)
     assert len(round.rolls) == 3
 
 
